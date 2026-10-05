@@ -1,0 +1,63 @@
+{
+  "_说明": "复制本文件为 local_config.json 并填写。所有字段都可以留空（对应功能降级），也可以用环境变量覆盖：BILI_SESSDATA / BILI_JCT / BILI_DEDEUSERID / BILI_READ_INTERVAL / BILI_WRITE_INTERVAL / BILI_READ_WORKERS。环境变量优先于本文件。",
+  "_重要": "本文件含登录凭据，已在 .gitignore 中排除，绝不要提交或分享。",
+
+  "bilibili": {
+    "sessdata": "",
+    "_sessdata": "登录凭据之一。推荐不手填，改用 fetch_library.py --login 浏览器扫码自动写入 scripts/bilibili_cookies.json",
+    "bili_jct": "",
+    "_bili_jct": "写操作的 csrf token，与 SESSDATA 成对出现",
+    "dedeuserid": "",
+    "_dedeuserid": "账号数字 id，用于校验登录态"
+  },
+
+  "rate_limit": {
+    "read_min_interval": 0.35,
+    "_read_min_interval": "读接口全局最小间隔（秒）。平台风控在收紧，不建议调小",
+    "write_min_interval": 2.0,
+    "_write_min_interval": "写接口最小间隔（秒）。调小会增加被风控拦截的概率",
+    "read_workers": 3,
+    "_read_workers": "富化阶段的并发线程数。实测 3 稳定，调高收益有限",
+    "max_retries": 4,
+    "_max_retries": "失败重试次数",
+    "backoff_base": 1.8,
+    "_backoff_base": "退避基数：等待 = base ** 尝试次数 + 随机抖动"
+  },
+
+  "classify": {
+    "high_confidence": 0.62,
+    "_high_confidence": "画像打分达到该值就直接归类，不再送复核",
+    "margin": 0.08,
+    "_margin": "前两名最小分差。分差太小说明两个分类都说得通，交给复核更稳妥",
+    "reorg_margin": 0.10,
+    "_reorg_margin": "把条目从已整理好的收藏夹往外挪时，目标夹需要的额外优势",
+    "secondary_confidence": 0.45,
+    "_secondary_confidence": "次分类阈值：达到该值的其它收藏夹会一并归入（多归属）",
+    "ai_min_confidence": 0.5,
+    "_ai_min_confidence": "复核结果的置信度下限，低于此值直接忽略",
+    "min_collection_size": 3,
+    "_min_collection_size": "条目数少于此值的收藏夹不作为分类目标（样本太少，画像不可信）",
+    "weights": {
+      "_说明": "各信号权重，相对值即可，不必加和为 1",
+      "tag": 1.0,
+      "_tag": "标签覆盖率 —— 主力信号，权重最高",
+      "title": 0.35,
+      "_title": "标题词覆盖率",
+      "creator": 0.45,
+      "_creator": "作者命中该收藏夹的高频作者",
+      "category": 0.15,
+      "_category": "原生分类一致"
+    }
+  },
+
+  "execute": {
+    "max_targets_per_item": 3,
+    "_max_targets_per_item": "每个条目最多归入几个收藏夹（含主分类）",
+    "empty_inbox": true,
+    "_empty_inbox": "归类后是否把条目从收件箱移出。只会移出收件箱，绝不动其它收藏夹",
+    "skip_collections": [],
+    "_skip_collections": "这些收藏夹不参与整理，原样保留。例：[\"其余\", \"存档\"]",
+    "keep_created_collections": true,
+    "_keep_created_collections": "回滚时是否保留本工具创建的收藏夹（true=保留，由你手动删）"
+  }
+}
